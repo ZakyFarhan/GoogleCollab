@@ -1,0 +1,59 @@
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_breast_cancer
+import seaborn as sns
+
+cancer = load_breast_cancer()
+
+df = pd.DataFrame(cancer.data, columns=[cancer.feature_names])
+
+df.describe()
+
+df.shape
+
+df = pd.DataFrame(np.c_[cancer['data'], cancer['target']],
+                  columns= np.append(cancer['feature_names'], ['target']))
+
+df.head(10)
+
+# malignt = 0(Cancer), benign = 1(No Cancer)
+cancer.target_names
+
+df.target.value_counts()
+
+sns.pairplot(df, hue = 'target', vars = ['mean radius', 'mean texture', 'mean perimeter', 'mean area', 'mean smoothness'])
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(20,12))
+sns.heatmap(df.corr(), annot=True, cmap='Greens')
+
+# Splitting Data
+
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(cancer.data, cancer.target, test_size=0.3, random_state=0)
+
+# Create Model
+
+#import svm model
+from sklearn import svm
+
+#Create a svm Classifier
+clf = svm.SVC(kernel='linear') #Linear Kernel
+
+#Train the model using the training sets
+clf.fit(X_train, y_train)
+
+#Predict the response for the test dataset
+y_pred = clf.predict(X_test)
+
+from sklearn import metrics
+
+print("Accuracy = ", metrics.accuracy_score(y_test, y_pred))
+
+print("Precision:",metrics.precision_score(y_test, y_pred))
+
+from sklearn.metrics import classification_report
+print(classification_report(y_test,y_pred))
+
